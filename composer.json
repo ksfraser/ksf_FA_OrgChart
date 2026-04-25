@@ -1,0 +1,9 @@
+{
+    "name": "ksfraser/ksf_fa_orgchart",
+    "description": "FA module - OrgChart",
+    "type": "fa-module",
+    "require": {
+        "ksfraser/ksf_OrgChart": "*",
+        "ksfraser/composerdendencymanager": "*"
+    }
+}
