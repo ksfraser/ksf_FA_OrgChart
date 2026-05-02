@@ -1,5 +1,77 @@
 <?php
-$module_id = 'OrgChart'; $module_version = '1.0.0'; $module_name = 'Organization Chart'; $module_description = 'Organizational hierarchy and chart';
-$module_tables = ['fa_org_positions']; $module_capabilities = ['SA_ORGCHARTVIEW'=>'View Org Chart','SA_ORGCHARTEDIT'=>'Edit Positions'];
-function orgchart_install():bool{return install_module_sql('OrgChart');}function orgchart_enable():bool{return enable_module('OrgChart');}function orgchart_disable():bool{return disable_module('OrgChart');}function orgchart_remove():bool{return remove_module_sql('OrgChart');}
-add_module($module_name,$module_version,$module_description);
+/**
+ * FA_OrgChart Module Hooks for FrontAccounting
+ */
+
+define('SS_ORGCHART', 129 << 8);
+
+class hooks_fa_orgchart extends hooks {
+    var $module_name = 'fa_orgchart';
+
+    function install_options($app) {
+        global $path_to_root;
+
+        switch($app->id) {
+            case 'HR':
+                $app->add_lapp_function(0, _("Organization Chart"),
+                    $path_to_root."/modules/".$this->module_name."/orgchart.php", 'SA_ORGCHARTVIEW', MENU_MAIN);
+                $app->add_lapp_function(1, _("Positions"),
+                    $path_to_root."/modules/".$this->module_name."/positions.php", 'SA_ORGCHARTEDIT', MENU_ENTRY);
+                break;
+        }
+    }
+
+    function install_access() {
+        $security_sections[SS_ORGCHART] = _("Organization Chart");
+        $security_areas['SA_ORGCHARTVIEW'] = array(SS_ORGCHART | 1, _("View Org Chart"));
+        $security_areas['SA_ORGCHARTEDIT'] = array(SS_ORGCHART | 2, _("Edit Positions"));
+        return array($security_areas, $security_sections);
+    }
+
+    function activate_extension($company, $check_only=true) {
+        $updates = array('sql/update.sql' => array($this->module_name));
+        $ok = $this->update_databases($company, $updates, $check_only);
+        if ($check_only || !$ok) {
+            return $ok;
+        }
+        $this->ensure_orgchart_schema();
+        return $ok;
+    }
+
+    private function table_exists($table) {
+        $sql = "SHOW TABLES LIKE " . db_escape($table);
+        $res = db_query($sql, 'Failed checking table existence');
+        return db_num_rows($res) > 0;
+    }
+
+    private function ensure_orgchart_schema() {
+        $tables = array(
+            TB_PREF . "fa_org_positions" => "
+                CREATE TABLE IF NOT EXISTS `" . TB_PREF . "fa_org_positions` (
+                    `id` INT(11) NOT NULL AUTO_INCREMENT,
+                    `position_title` VARCHAR(100) NOT NULL,
+                    `department` VARCHAR(50) DEFAULT NULL,
+                    `parent_position_id` INT(11) DEFAULT NULL,
+                    `employee_id` VARCHAR(100) DEFAULT NULL,
+                    `job_description_id` INT(11) DEFAULT NULL,
+                    `is_active` TINYINT(1) DEFAULT 1,
+                    `sort_order` INT(11) DEFAULT 0,
+                    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                    PRIMARY KEY (`id`),
+                    KEY `idx_parent` (`parent_position_id`),
+                    KEY `idx_employee` (`employee_id`),
+                    KEY `idx_department` (`department`)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4"
+        );
+
+        foreach ($tables as $table_name => $sql) {
+            db_query($sql, "Could not create OrgChart table: $table_name");
+        }
+    }
+
+    function db_prevoid($trans_type, $trans_no) {
+        // Handle voiding if needed
+    }
+}
+?>
