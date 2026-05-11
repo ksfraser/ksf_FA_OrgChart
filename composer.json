@@ -1,9 +1,46 @@
 {
     "name": "ksfraser/ksf_fa_orgchart",
-    "description": "FA module - OrgChart",
-    "type": "fa-module",
+    "description": "FrontAccounting OrgChart Adapter - Salesman/warranty rep display for customer portal",
+    "type": "library",
+    "license": "GPL-3.0",
     "require": {
-        "ksfraser/ksf_OrgChart": "*",
-        "ksfraser/composerdendencymanager": "*"
-    }
+        "php": "^7.3",
+        "ksfraser/ksf-orgchart": "*",
+        "ksfraser/ksf-crm": "*",
+        "ksfraser/ksf-hrm": "*",
+        "ksfraser/ksf-projectmanagement": "*"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^10.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "Ksfraser\\FA\\OrgChart\\": "src/Ksfraser/FA/OrgChart/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Ksfraser\\Tests\\": "tests/"
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../ksf_OrgChart"
+        },
+        {
+            "type": "path",
+            "url": "../ksf_CRM"
+        },
+        {
+            "type": "path",
+            "url": "../ksf_HRM"
+        },
+        {
+            "type": "path",
+            "url": "../ksf_ProjectManagement"
+        }
+    ]
 }
