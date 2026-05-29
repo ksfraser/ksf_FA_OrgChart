@@ -158,12 +158,16 @@ HTML;
 
     private function getCardTypeLabel(string $type): string
     {
-        return match ($type) {
-            TeamMemberCard::TYPE_SALESMAN => 'Your Salesman',
-            TeamMemberCard::TYPE_WARRANTY => 'Warranty Rep',
-            TeamMemberCard::TYPE_PROJECT => 'Project Team',
-            default => 'Contact',
-        };
+        if ($type === TeamMemberCard::TYPE_SALESMAN) {
+            return 'Your Salesman';
+        }
+        if ($type === TeamMemberCard::TYPE_WARRANTY) {
+            return 'Warranty Rep';
+        }
+        if ($type === TeamMemberCard::TYPE_PROJECT) {
+            return 'Project Team';
+        }
+        return 'Contact';
     }
 
     public function getViewArray(): array

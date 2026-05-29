@@ -136,12 +136,16 @@ HTML;
 
     private function getTypeLabel(string $type): string
     {
-        return match ($type) {
-            'salesman' => 'Your Salesman',
-            'warranty' => 'Warranty Rep',
-            'project' => 'Project Team',
-            default => 'Contact',
-        };
+        if ($type === 'salesman') {
+            return 'Your Salesman';
+        }
+        if ($type === 'warranty') {
+            return 'Warranty Rep';
+        }
+        if ($type === 'project') {
+            return 'Project Team';
+        }
+        return 'Contact';
     }
 
     public function renderProjectTeamSection(array $teamMembers): string
