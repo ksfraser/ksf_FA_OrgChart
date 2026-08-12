@@ -61,7 +61,7 @@ class hooks_ksf_FA_OrgChart extends hooks {
      * @return array [0] => $security_areas, [1] => $security_sections
      */
     function install_access() {
-        $security_sections[SS_ksf_FA_OrgChart] = _("");
+        $security_sections[SS_ksf_FA_OrgChart] = _("Org Chart");
         $security_areas['SA_ksf_FA_OrgChartVIEW'] = array(
             SS_ksf_FA_OrgChart | 1, 
             _("View ")
